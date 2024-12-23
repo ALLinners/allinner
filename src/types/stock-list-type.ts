@@ -5,6 +5,7 @@ export const StockListType = {
   테슬라: 'TSLA.O',
   넷플릭스: 'NFLX.O',
   AMD: 'AMD.O',
+  테나야테라퓨틱스: 'TNYA.O',
   브로드컴: 'AVGO.O',
   스타벅스: 'SBUX.O',
   인텔: 'INTC.O',
