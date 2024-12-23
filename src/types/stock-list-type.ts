@@ -13,6 +13,7 @@ export const StockListType = {
   로블록스: 'RBLX.O',
   모더나: 'MRNA.O',
   로켓랩: 'RKLB.O',
+  퀄컴: 'QCOM.O',
   파파존스피자: 'PZZA.O',
   삼성전자: '005930',
   SK하이닉스: '000660',
