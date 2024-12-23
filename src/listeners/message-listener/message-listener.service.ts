@@ -14,6 +14,7 @@ import { getKospiMarketValue } from '../../util/get-kospi-market-value';
 import { formatCurrency } from '../../util/format-currency';
 import { getChangeValueWithIcon } from '../../util/get-icon-by-rate';
 import { getMarketValue } from '../../util/get-market-value';
+import { calculateSpace } from '../../util/calculate-space';
 
 @Injectable()
 export class MessageListenerService {
@@ -86,6 +87,24 @@ export class MessageListenerService {
         }
         this.messageCacheService.setState(message.author.id, message);
 
+        break;
+
+      case '종목':
+        const stockNameList = Object.keys(StockListType);
+
+        let description = '';
+
+        stockNameList.forEach((stockName, index) => {
+          if (index % 2 === 1) description += stockName + '\n';
+          else description += stockName + calculateSpace(stockName);
+        });
+
+        const embed1 = new EmbedBuilder()
+          .setColor(0x0099ff)
+          .setTitle('종목')
+          .setDescription('```' + description + '\n```');
+
+        message.channel.send({ embeds: [embed1] });
         break;
 
       default:

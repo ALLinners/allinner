@@ -6,6 +6,11 @@ export const fetchStockData = async (
   const isKospi =
     !isNaN(Number(reutersCode)) && !isNaN(parseFloat(reutersCode));
 
+  /*
+
+   */
+  // const market = Market.
+
   const fetchFromAPI = async (url: string): Promise<any> => {
     const response = await fetch(url);
     return response.json();
@@ -35,4 +40,9 @@ export const fetchStockData = async (
   const data = await fetchFromAPI(`${baseUrl}${reutersCode}/basic`);
 
   return isKospi ? formatKospiData(data) : data;
+};
+
+const MarketType = {
+  NASDAQ: 0,
+  KOSPI: 1,
 };
