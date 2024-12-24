@@ -1,20 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import {
-  ActionRowBuilder,
-  ButtonBuilder,
-  EmbedBuilder,
-  Message,
-  OmitPartialGroupDMChannel,
-  ButtonStyle,
-} from 'discord.js';
+import { Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { MessageCacheService } from '../../message-cache/message-cache.service';
 import { StockListType } from '../../types/stock-list-type';
 import { fetchStockData } from '../../util/fetch-stock-data';
-import { getKospiMarketValue } from '../../util/get-kospi-market-value';
-import { formatCurrency } from '../../util/format-currency';
-import { getChangeValueWithIcon } from '../../util/get-icon-by-rate';
-import { getMarketValue } from '../../util/get-market-value';
-import { calculateSpace } from '../../util/calculate-space';
+import { createStockEmbed } from '../../component-builder/create-stock-embed';
+import { createStockButton } from '../../component-builder/create-stock-button';
+import { createStockTypeEmbed } from '../../component-builder/create-stock-type-embed';
 
 @Injectable()
 export class MessageListenerService {
@@ -35,76 +26,23 @@ export class MessageListenerService {
 
         const stockData = await fetchStockData(reutersCode);
 
-        const currentPrice = Number(stockData.closePrice.replace(/,/g, ''));
-        const titleIcon =
-          Number(stockData.compareToPreviousClosePrice) < 0 ? '📉' : '📈';
-        const marketValueKospi = await getKospiMarketValue(reutersCode);
-
-        const embed = new EmbedBuilder()
-          .setColor(0x0099ff)
-          .setTitle(titleIcon + ' ' + stockData.stockNameEng)
-          .setDescription(
-            formatCurrency(currentPrice) +
-              ' ' +
-              (stockData.currencyType ? stockData.currencyType.name : 'KRW') +
-              '\u3000' +
-              getChangeValueWithIcon(stockData.compareToPreviousClosePrice) +
-              '\u3000' +
-              stockData.fluctuationsRatio +
-              '%',
-          )
-          .setImage(stockData.imageCharts.day_up)
-          .addFields({
-            name: '시가총액',
-            value: stockData.stockItemTotalInfos
-              ? getMarketValue(stockData)
-              : marketValueKospi,
-          })
-          .setFooter({
-            text:
-              stockData.stockExchangeType.name + ' / ' + stockData.symbolCode,
-          });
-
-        const row = new ActionRowBuilder<ButtonBuilder>().addComponents(
-          new ButtonBuilder()
-            .setCustomId('buyStock')
-            .setLabel(
-              stockData.closePrice +
-                ' ' +
-                (stockData.currencyType ? stockData.currencyType.name : 'KRW') +
-                '에 매수하기',
-            )
-            .setStyle(ButtonStyle.Primary),
-        );
+        const stockEmbed = await createStockEmbed(stockData);
+        const stockRow = createStockButton(stockData);
 
         await message.channel.send({
-          embeds: [embed],
-          components: [row],
+          embeds: [stockEmbed],
+          components: [stockRow],
         });
 
-        if (this.messageCacheService.getState(message.author.id)) {
+        if (this.messageCacheService.getState(message.author.id))
           this.messageCacheService.deleteState(message.author.id);
-        }
         this.messageCacheService.setState(message.author.id, message);
 
         break;
 
       case '종목':
-        const stockNameList = Object.keys(StockListType);
-
-        let description = '';
-
-        stockNameList.forEach((stockName, index) => {
-          if (index % 2 === 1) description += stockName + '\n';
-          else description += stockName + calculateSpace(stockName);
-        });
-
-        const embed1 = new EmbedBuilder()
-          .setColor(0x0099ff)
-          .setTitle('종목')
-          .setDescription('```' + description + '\n```');
-
-        message.channel.send({ embeds: [embed1] });
+        const stockTypeEmbed = createStockTypeEmbed(Object.keys(StockListType));
+        message.channel.send({ embeds: [stockTypeEmbed] });
         break;
 
       default:
