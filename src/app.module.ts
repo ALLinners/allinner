@@ -7,6 +7,8 @@ import { MessageCacheModule } from './message-cache/message-cache.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/get-typeorm-config';
 import { UserModule } from './user/user.module';
+import { KospiModule } from './kospi/kospi.module';
+import { NasdaqModule } from './nasdaq/nasdaq.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { UserModule } from './user/user.module';
     InteractionListenerModule,
     MessageCacheModule,
     UserModule,
+    KospiModule,
+    NasdaqModule,
   ],
   controllers: [],
   providers: [AppService],
