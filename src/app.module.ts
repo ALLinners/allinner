@@ -6,6 +6,7 @@ import { InteractionListenerModule } from './listeners/interaction-listener/inte
 import { MessageCacheModule } from './message-cache/message-cache.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/get-typeorm-config';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { getTypeOrmConfig } from './config/get-typeorm-config';
     MessageListenerModule,
     InteractionListenerModule,
     MessageCacheModule,
+    UserModule,
   ],
   controllers: [],
   providers: [AppService],
