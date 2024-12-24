@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { MessageCacheService } from '../../message-cache/message-cache.service';
 import { StockListType } from '../../types/stock-list-type';
@@ -6,15 +6,37 @@ import { fetchStockData } from '../../util/fetch-stock-data';
 import { createStockEmbed } from '../../component-builder/create-stock-embed';
 import { createStockButton } from '../../component-builder/create-stock-button';
 import { createStockTypeEmbed } from '../../component-builder/create-stock-type-embed';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class MessageListenerService {
-  constructor(private readonly messageCacheService: MessageCacheService) {}
+  constructor(
+    private readonly messageCacheService: MessageCacheService,
+    private readonly userService: UserService,
+  ) {}
 
   async handleMessage(message: OmitPartialGroupDMChannel<Message<boolean>>) {
     const [command, ...args] = message.content.slice(1).split(' ');
 
     switch (command) {
+      case '가입':
+        try {
+          const user = await this.userService.signup({
+            id: message.author.id,
+            name: message.author.globalName,
+          });
+
+          await message.reply(user.name + '님 가입을 환영합니다.');
+        } catch (e) {
+          if (e instanceof ConflictException) {
+            await message.reply(
+              message.author.globalName + '님은 이미 가입되어 있습니다.',
+            );
+          }
+        }
+
+        break;
+
       case '주식': // !주식 테슬라
         const stockName = args[0]; // 테슬라
         const reutersCode = StockListType[stockName];
