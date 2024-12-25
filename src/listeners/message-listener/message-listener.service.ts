@@ -39,8 +39,14 @@ export class MessageListenerService {
 
       case '주식': // !주식 테슬라
         const stockName = args[0]; // 테슬라
-        const reutersCode = StockListType[stockName];
+        if (!stockName) {
+          message.channel.send(
+            "명령어가 잘못됐어요. 주식 이름을 입력해주세요.\n예시: '!주식 [이름]'",
+          );
+          break;
+        }
 
+        const reutersCode = StockListType[stockName];
         if (!reutersCode) {
           message.channel.send(stockName + ' (이)라는 종목을 찾을 수 없어요.');
           break;
