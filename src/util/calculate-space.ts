@@ -4,25 +4,31 @@ export const calculateSpace = (content: string) => {
   let space = '';
   let usedPixel = 0;
 
+  const koreanSpace = 7;
+  const englishSpace = 5;
+  const maxChar = 10;
+
   for (let i = 0; i < koreanCount; i++) {
-    usedPixel += 15;
+    usedPixel += koreanSpace;
   }
 
   for (let i = 0; i < content.length - koreanCount; i++) {
-    usedPixel += 10;
+    usedPixel += englishSpace;
   }
 
-  let needSpacePixel = 150 - usedPixel;
-  let requiredKoreanSpace = 0;
-  if (needSpacePixel % 10 == (4 | 5 | 6)) {
-    requiredKoreanSpace = 1;
-    needSpacePixel -= 15;
-  }
-  const requiredEnglishSpace = needSpacePixel / 10;
+  let needSpacePixel = koreanSpace * maxChar - usedPixel;
 
-  for (let i = 0; i < requiredKoreanSpace; i++) {
-    space += '　';
+  for (let i = 0; i <= needSpacePixel / koreanSpace; i++) {
+    if ((needSpacePixel - koreanSpace * i) % englishSpace == 0) {
+      for (let j = 0; j < i; j++) {
+        space += '　';
+      }
+      needSpacePixel -= koreanSpace * i;
+      break;
+    }
   }
+
+  const requiredEnglishSpace = needSpacePixel / englishSpace;
   for (let i = 0; i < requiredEnglishSpace; i++) {
     space += ' ';
   }
