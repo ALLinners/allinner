@@ -23,6 +23,6 @@ export class Stock {
 
   // @Column({ name: 'traders_name' })
   @ManyToOne(() => Trader, (trader) => trader.name)
-  @JoinColumn({ name: 'traders_name' })
-  tradersName: string;
+  @JoinColumn({ name: 'trader_name' })
+  traderName: string;
 }
