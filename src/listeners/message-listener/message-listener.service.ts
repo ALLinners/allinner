@@ -39,6 +39,17 @@ export class MessageListenerService {
 
         break;
 
+      case '탈퇴':
+        try{
+          await this.userService.delete(message.author.id);
+          await message.reply('탈퇴가 완료되었습니다.');
+        } catch (e) {
+          if (e instanceof ConflictException){
+            await message.reply(message.author.globalName + '님은 가입되지 않은 사용자입니다.');
+          }
+        }
+        break;
+
       case '주식': // !주식 테슬라
         const stockName = args[0]; // 테슬라
 
