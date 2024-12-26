@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { MessageCacheService } from './message-cache.service';
+import { MessageCacheService } from '../services/message-cache.service';
 
 @Module({
   imports: [],

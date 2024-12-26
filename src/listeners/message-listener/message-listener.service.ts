@@ -1,12 +1,12 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Message, OmitPartialGroupDMChannel } from 'discord.js';
-import { MessageCacheService } from '../../message-cache/message-cache.service';
 import { fetchStockData } from '../../util/fetch-stock-data';
 import { createStockEmbed } from '../../component-builder/create-stock-embed';
 import { createStockButton } from '../../component-builder/create-stock-button';
 import { createStockTypeEmbed } from '../../component-builder/create-stock-type-embed';
 import { UserService } from '../../user/user.service';
-import { StockService } from '../../stock/stock.service';
+import { StockService } from '../../services/stock.service';
+import { MessageCacheService } from '../../services/message-cache.service';
 
 @Injectable()
 export class MessageListenerService {
