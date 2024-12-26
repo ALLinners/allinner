@@ -22,4 +22,14 @@ export class UserService {
     }
     return this.userRepository.save(user);
   }
+
+  async delete(id: string) {
+    const existsUser = await this.userRepository.findOne({
+      where: { id },
+    });
+    if (!existsUser) {
+      throw new ConflictException();
+    }
+    return this.userRepository.remove(existsUser);
+  }
 }
