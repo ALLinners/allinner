@@ -7,12 +7,14 @@ import { createStockEmbed } from '../../component-builder/create-stock-embed';
 import { createStockButton } from '../../component-builder/create-stock-button';
 import { createStockTypeEmbed } from '../../component-builder/create-stock-type-embed';
 import { UserService } from '../../user/user.service';
+import { StockService } from '../../stock/stock.service';
 
 @Injectable()
 export class MessageListenerService {
   constructor(
     private readonly messageCacheService: MessageCacheService,
     private readonly userService: UserService,
+    private readonly stockService: StockService,
   ) {}
 
   async handleMessage(message: OmitPartialGroupDMChannel<Message<boolean>>) {
@@ -39,20 +41,19 @@ export class MessageListenerService {
 
       case '주식': // !주식 테슬라
         const stockName = args[0]; // 테슬라
+
         if (!stockName) {
-          message.channel.send(
-            "명령어가 잘못됐어요. 주식 이름을 입력해주세요.\n예시: '!주식 [이름]'",
-          );
+          message.channel.send("'!주식 <종목명>' 으로 입력해주세요");
           break;
         }
+        const findStock = await this.stockService.findByName(stockName);
 
-        const reutersCode = StockListType[stockName];
-        if (!reutersCode) {
+        if (!findStock) {
           message.channel.send(stockName + ' (이)라는 종목을 찾을 수 없어요.');
           break;
         }
 
-        const stockData = await fetchStockData(reutersCode);
+        const stockData = await fetchStockData(findStock.reutersCode);
 
         const stockEmbed = await createStockEmbed(stockData);
         const stockRow = createStockButton(stockData);
