@@ -18,7 +18,7 @@ export class Stock {
   @Column({ nullable: false })
   name: string;
 
-  @ManyToOne(() => Trader, (trader) => trader.id)
+  @ManyToOne(() => Trader, (trader) => trader.stocks)
   @JoinColumn({ name: 'trader_id' })
   trader: Trader;
 }

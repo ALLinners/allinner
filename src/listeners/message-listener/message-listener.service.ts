@@ -59,13 +59,14 @@ export class MessageListenerService {
           break;
         }
         const findStock = await this.stockService.findByName(stockName);
+        console.log(JSON.stringify(findStock));
 
         if (!findStock) {
           message.channel.send(stockName + ' (이)라는 종목을 찾을 수 없어요.');
           break;
         }
 
-        const stockData = await fetchStockData(findStock.reutersCode);
+        const stockData = await fetchStockData(findStock);
 
         const stockEmbed = await createStockEmbed(stockData);
         const stockRow = createStockButton(stockData);
