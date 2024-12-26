@@ -1,14 +1,11 @@
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Trader } from '../../trader/entities/trader.entity';
-
-/*
-create table stock (
-    id serial primary key,
-    reuters_code text not null,
-    name text not null,
-    traders_name text references trader(name)
-);
- */
 
 @Entity('stock')
 export class Stock {
@@ -21,8 +18,7 @@ export class Stock {
   @Column({ nullable: false })
   name: string;
 
-  // @Column({ name: 'traders_name' })
-  @ManyToOne(() => Trader, (trader) => trader.name)
-  @JoinColumn({ name: 'trader_name' })
-  traderName: string;
+  @ManyToOne(() => Trader, (trader) => trader.id)
+  @JoinColumn({ name: 'trader_id' })
+  trader: Trader;
 }

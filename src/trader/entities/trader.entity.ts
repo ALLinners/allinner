@@ -1,13 +1,5 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-/*
-create table trader (
-    id serial primary key,
-    name text not null unique,
-    base_uri text not null
-);
- */
-
 @Entity('trader')
 export class Trader {
   @PrimaryGeneratedColumn()
