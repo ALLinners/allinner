@@ -11,6 +11,13 @@ export class StockService {
   ) {}
 
   async findByName(name: string) {
-    return await this.stockRepository.findOne({ where: { name: name } });
+    return await this.stockRepository.findOne({
+      where: { name: name },
+      relations: ['trader'],
+    });
+  }
+
+  async findAll() {
+    return await this.stockRepository.find();
   }
 }

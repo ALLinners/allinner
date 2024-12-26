@@ -9,12 +9,15 @@ import {
   TextInputStyle,
 } from 'discord.js';
 import { MessageCacheService } from '../../message-cache/message-cache.service';
-import { StockListType } from '../../types/stock-list-type';
 import { fetchStockData } from '../../util/fetch-stock-data';
+import { StockService } from '../../stock/stock.service';
 
 @Injectable()
 export class InteractionListenerService {
-  constructor(private readonly messageCacheService: MessageCacheService) {}
+  constructor(
+    private readonly messageCacheService: MessageCacheService,
+    private readonly stockService: StockService,
+  ) {}
 
   handleInteraction(interaction: Interaction) {
     if (interaction.isButton()) {
@@ -37,11 +40,13 @@ export class InteractionListenerService {
         )
           break;
 
-        const reutersCode = this.messageCacheService
+        const stockName = this.messageCacheService
           .getState(interaction.user.id)
           ?.content.split(' ')
           .slice(1)[0];
-        const stockData = await fetchStockData(StockListType[reutersCode]);
+
+        const findStock = await this.stockService.findByName(stockName);
+        const stockData = await fetchStockData(findStock);
 
         const modal = new ModalBuilder()
           .setCustomId('buyStockModal')

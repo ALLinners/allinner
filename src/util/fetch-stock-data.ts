@@ -1,11 +1,9 @@
 import { StockType } from '../types/stock-type';
+import { Stock } from '../stock/entities/stock.entity';
 
 export const fetchStockData = async (
-  reutersCode: string,
+  stock: Stock,
 ): Promise<StockType | any> => {
-  const isKospi =
-    !isNaN(Number(reutersCode)) && !isNaN(parseFloat(reutersCode));
-
   const fetchFromAPI = async (url: string): Promise<any> => {
     const response = await fetch(url);
     return response.json();
@@ -28,11 +26,13 @@ export const fetchStockData = async (
     };
   };
 
-  const baseUrl = isKospi
-    ? 'https://m.stock.naver.com/api/stock/'
-    : 'https://api.stock.naver.com/stock/';
+  if (stock.trader.name === 'NASDAQ') {
+    stock.reutersCode += '.O';
+  }
 
-  const data = await fetchFromAPI(`${baseUrl}${reutersCode}/basic`);
+  const data = await fetchFromAPI(
+    `${stock.trader.baseUri}${stock.reutersCode}/basic`,
+  );
 
-  return isKospi ? formatKospiData(data) : data;
+  return stock.trader.name === 'KOSPI' ? formatKospiData(data) : data;
 };

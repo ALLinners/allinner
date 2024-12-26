@@ -1,7 +1,6 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { MessageCacheService } from '../../message-cache/message-cache.service';
-import { StockListType } from '../../types/stock-list-type';
 import { fetchStockData } from '../../util/fetch-stock-data';
 import { createStockEmbed } from '../../component-builder/create-stock-embed';
 import { createStockButton } from '../../component-builder/create-stock-button';
@@ -40,12 +39,14 @@ export class MessageListenerService {
         break;
 
       case '탈퇴':
-        try{
+        try {
           await this.userService.delete(message.author.id);
           await message.reply('탈퇴가 완료되었습니다.');
         } catch (e) {
-          if (e instanceof ConflictException){
-            await message.reply(message.author.globalName + '님은 가입되지 않은 사용자입니다.');
+          if (e instanceof ConflictException) {
+            await message.reply(
+              message.author.globalName + '님은 가입되지 않은 사용자입니다.',
+            );
           }
         }
         break;
@@ -58,13 +59,14 @@ export class MessageListenerService {
           break;
         }
         const findStock = await this.stockService.findByName(stockName);
+        console.log(JSON.stringify(findStock));
 
         if (!findStock) {
           message.channel.send(stockName + ' (이)라는 종목을 찾을 수 없어요.');
           break;
         }
 
-        const stockData = await fetchStockData(findStock.reutersCode);
+        const stockData = await fetchStockData(findStock);
 
         const stockEmbed = await createStockEmbed(stockData);
         const stockRow = createStockButton(stockData);
@@ -81,7 +83,9 @@ export class MessageListenerService {
         break;
 
       case '종목':
-        const stockTypeEmbed = createStockTypeEmbed(Object.keys(StockListType));
+        const findStocks = await this.stockService.findAll();
+        const stockList = findStocks.map((stock) => stock.name);
+        const stockTypeEmbed = createStockTypeEmbed(stockList);
         message.channel.send({ embeds: [stockTypeEmbed] });
         break;
 

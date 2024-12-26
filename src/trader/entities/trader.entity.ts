@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Stock } from '../../stock/entities/stock.entity';
 
 @Entity('trader')
 export class Trader {
@@ -10,4 +11,7 @@ export class Trader {
 
   @Column({ name: 'base_uri', nullable: false })
   baseUri: string;
+
+  @OneToMany(() => Stock, (stock) => stock.trader)
+  stocks: Stock[];
 }
