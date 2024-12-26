@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MessageListenerService } from './message-listener.service';
-import { MessageCacheModule } from '../../message-cache/message-cache.module';
 import { UserModule } from '../../user/user.module';
-import { StockModule } from '../../stock/stock.module';
+import { MessageCacheModule } from '../../modules/message-cache.module';
+import { StockModule } from '../../modules/stock.module';
 
 @Module({
   imports: [MessageCacheModule, UserModule, StockModule],

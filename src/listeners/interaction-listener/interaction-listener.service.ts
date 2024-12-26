@@ -8,9 +8,9 @@ import {
   TextInputBuilder,
   TextInputStyle,
 } from 'discord.js';
-import { MessageCacheService } from '../../message-cache/message-cache.service';
 import { fetchStockData } from '../../util/fetch-stock-data';
-import { StockService } from '../../stock/stock.service';
+import { MessageCacheService } from '../../services/message-cache.service';
+import { StockService } from '../../services/stock.service';
 
 @Injectable()
 export class InteractionListenerService {

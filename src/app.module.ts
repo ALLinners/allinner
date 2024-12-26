@@ -3,12 +3,12 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MessageListenerModule } from './listeners/message-listener/message-listener.module';
 import { InteractionListenerModule } from './listeners/interaction-listener/interaction-listener.module';
-import { MessageCacheModule } from './message-cache/message-cache.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/get-typeorm-config';
 import { UserModule } from './user/user.module';
-import { KospiModule } from './kospi/kospi.module';
-import { NasdaqModule } from './nasdaq/nasdaq.module';
+import { MessageCacheModule } from './modules/message-cache.module';
+import { StockModule } from './modules/stock.module';
+import { TraderModule } from './modules/trader.module';
 
 @Module({
   imports: [
@@ -23,8 +23,8 @@ import { NasdaqModule } from './nasdaq/nasdaq.module';
     InteractionListenerModule,
     MessageCacheModule,
     UserModule,
-    KospiModule,
-    NasdaqModule,
+    StockModule,
+    TraderModule,
   ],
   controllers: [],
   providers: [AppService],

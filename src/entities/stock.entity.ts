@@ -5,7 +5,7 @@ import {
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Trader } from '../../trader/entities/trader.entity';
+import { Trader } from './trader.entity';
 
 @Entity('stock')
 export class Stock {

@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { InteractionListenerService } from './interaction-listener.service';
-import { MessageCacheModule } from '../../message-cache/message-cache.module';
-import { StockModule } from '../../stock/stock.module';
+import { StockModule } from '../../modules/stock.module';
+import { MessageCacheModule } from '../../modules/message-cache.module';
 
 @Module({
   imports: [MessageCacheModule, StockModule],

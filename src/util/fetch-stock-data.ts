@@ -1,5 +1,5 @@
 import { StockType } from '../types/stock-type';
-import { Stock } from '../stock/entities/stock.entity';
+import { Stock } from '../entities/stock.entity';
 
 export const fetchStockData = async (
   stock: Stock,
