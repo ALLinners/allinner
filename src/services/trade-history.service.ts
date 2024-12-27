@@ -27,10 +27,52 @@ export class TradeHistoryService {
   }
 
   async findAllByUser(user: User) {
-    // todo 여러번에 걸쳐 매수된거 계산, 매수, 매도 구분 컬럼 추후 추가
-    return await this.tradeHistoryRepository.find({
+    const trades = await this.tradeHistoryRepository.find({
       where: { user: user },
       relations: ['stock', 'stock.trader'],
     });
+
+    const holdings = trades.reduce(
+      (
+        acc: { [key: number]: { quantity: number; totalCost: number } },
+        trade,
+      ) => {
+        const { stock, price, tradeType } = trade;
+        if (!acc[stock.id]) acc[stock.id] = { quantity: 0, totalCost: 0 };
+
+        if (tradeType === '매수') {
+          acc[stock.id].quantity += trade.amount;
+          acc[stock.id].totalCost += parseFloat(price.toString());
+        } else if (tradeType === '매도') {
+          acc[stock.id].quantity -= trade.amount;
+          acc[stock.id].totalCost -= parseFloat(price.toString());
+        }
+
+        return acc;
+      },
+      {},
+    );
+
+    const result = Object.entries(holdings).map(
+      ([stockId, { quantity, totalCost }]) => ({
+        stockId: Number(stockId),
+        quantity,
+        averagePrice: quantity > 0 ? Math.round(totalCost / quantity) : 0,
+      }),
+    );
+
+    const tradesResult: TradeHistory[] = [];
+
+    result.forEach((o) => {
+      const match = trades.find((trade) => trade.stock.id === o.stockId);
+      const myTrade: TradeHistory = {
+        ...match,
+        price: o.averagePrice,
+        amount: o.quantity,
+      };
+      tradesResult.push(myTrade);
+    });
+
+    return tradesResult;
   }
 }
