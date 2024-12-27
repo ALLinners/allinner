@@ -17,6 +17,12 @@ export class TradeHistory {
   @Column()
   price: number;
 
+  @Column()
+  amount: number;
+
+  @Column({ type: 'enum', enum: ['매수', '매도'], name: 'trade_type' })
+  tradeType: '매수' | '매도';
+
   @ManyToOne(() => User, (user) => user.tradeHistories)
   @JoinColumn({ name: 'user_id' })
   user: User;

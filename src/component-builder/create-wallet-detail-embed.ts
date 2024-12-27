@@ -28,16 +28,14 @@ export const createWalletDetailEmbed = async (
   stocks.forEach((stock, index) => {
     const stockName = stock.stock.name;
     const stockDelta = Math.round(currentPrice[index] - stock.price);
+
     const stockDeltaPercentWithIcon = getChangeValueWithIcon(stockDelta);
     description +=
       stockName +
       calculateSpace(stockName, 10) +
       stockDeltaPercentWithIcon +
       calculateSpace(stockDeltaPercentWithIcon, 10) +
-      (
-        ((stock.price - currentPrice[index]) / currentPrice[index]) *
-        100
-      ).toFixed(2) +
+      (((currentPrice[index] - stock.price) / stock.price) * 100).toFixed(2) +
       '%' +
       '\n';
   });
