@@ -1,7 +1,8 @@
 import { NotFoundException } from '@nestjs/common';
 
-export const calculateUsdToKrw = async (usd: number) => {
+export const calculateUsdToKrw = async (usd: number | string) => {
   try {
+    if (typeof usd === 'string') usd = Number(usd.replace(/,/g, ''));
     const response = await fetch(
       'https://m.stock.naver.com/front-api/marketIndex/prices?category=exchange&reutersCode=FX_USDKRW&page=1',
     );
