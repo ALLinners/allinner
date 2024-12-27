@@ -6,7 +6,7 @@ export const createStockTypeEmbed = (stockNameList: string[]) => {
 
   stockNameList.forEach((stockName, index) => {
     if (index % 2 === 1) description += stockName + '\n';
-    else description += stockName + calculateSpace(stockName);
+    else description += stockName + calculateSpace(stockName, 10);
   });
 
   return new EmbedBuilder()
