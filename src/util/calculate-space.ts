@@ -1,4 +1,4 @@
-export const calculateSpace = (content: string) => {
+export const calculateSpace = (content: string, maxWidth: number) => {
   const matches = content.match(/[ㄱ-힣]/g);
   const koreanCount = matches ? matches.length : 0;
   let space = '';
@@ -6,7 +6,7 @@ export const calculateSpace = (content: string) => {
 
   const koreanSpace = 7;
   const englishSpace = 5;
-  const maxChar = 10;
+  const maxChar = maxWidth;
 
   for (let i = 0; i < koreanCount; i++) {
     usedPixel += koreanSpace;

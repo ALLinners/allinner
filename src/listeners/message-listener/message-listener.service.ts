@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Message, OmitPartialGroupDMChannel } from 'discord.js';
 import { fetchStockData } from '../../util/fetch-stock-data';
 import { createStockEmbed } from '../../component-builder/create-stock-embed';
@@ -7,6 +11,9 @@ import { createStockTypeEmbed } from '../../component-builder/create-stock-type-
 import { UserService } from '../../user/user.service';
 import { StockService } from '../../services/stock.service';
 import { MessageCacheService } from '../../services/message-cache.service';
+import { createUserNotFoundEmbed } from '../../component-builder/create-user-not-found-found-embed';
+import { Wallet } from '../../wallet/entities/wallet.entity';
+import { createWalletDetailEmbed } from '../../component-builder/create-wallet-detail-embed';
 
 @Injectable()
 export class MessageListenerService {
@@ -79,6 +86,39 @@ export class MessageListenerService {
       const stockList = findStocks.map((stock) => stock.name);
       const stockTypeEmbed = createStockTypeEmbed(stockList);
       message.channel.send({ embeds: [stockTypeEmbed] });
+    } else if (command === '내지갑') {
+      try {
+        const user = await this.userService.find(message.author.id);
+        // const userWallet = Error('TODO');
+        // const userStocks = Error('TODO');
+        // for debug start
+        const userWallet = new Wallet();
+        userWallet.accountNumber = 'DEBUG-6974';
+        userWallet.userId = user.id;
+        userWallet.balance = 1818;
+        const teslaStock = await fetchStockData(
+          await this.stockService.findByName('테슬라'),
+        );
+        const samsungStock = await fetchStockData(
+          await this.stockService.findByName('삼성전자'),
+        );
+        const userStocks = [teslaStock, samsungStock];
+        // for debug end
+        const walletInfoEmbed = await createWalletDetailEmbed(
+          message.author.globalName,
+          userWallet,
+          userStocks,
+        );
+        message.channel.send({ embeds: [walletInfoEmbed] });
+      } catch (e) {
+        if (e instanceof NotFoundException) {
+          const embed = await createUserNotFoundEmbed();
+          message.channel.send({ embeds: [embed] });
+        } else if (e instanceof ConflictException) {
+        } else {
+          message.channel.send('뭔가 잘못됐어요.');
+        }
+      }
     } else {
       message.channel.send(command + ' (이)라는 명령어가 존재하지 않아요.');
     }
