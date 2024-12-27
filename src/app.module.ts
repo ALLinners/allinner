@@ -5,7 +5,7 @@ import { MessageListenerModule } from './listeners/message-listener/message-list
 import { InteractionListenerModule } from './listeners/interaction-listener/interaction-listener.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { getTypeOrmConfig } from './config/get-typeorm-config';
-import { UserModule } from './user/user.module';
+import { UserModule } from './modules/user.module';
 import { MessageCacheModule } from './modules/message-cache.module';
 import { StockModule } from './modules/stock.module';
 import { TraderModule } from './modules/trader.module';

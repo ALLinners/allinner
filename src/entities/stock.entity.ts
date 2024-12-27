@@ -3,9 +3,11 @@ import {
   Entity,
   JoinColumn,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Trader } from './trader.entity';
+import { TradeHistory } from './trade-history.entity';
 
 @Entity('stock')
 export class Stock {
@@ -21,4 +23,8 @@ export class Stock {
   @ManyToOne(() => Trader, (trader) => trader.stocks)
   @JoinColumn({ name: 'trader_id' })
   trader: Trader;
+
+  @OneToMany(() => TradeHistory, (tradeHistory) => tradeHistory.stock)
+  @JoinColumn({ name: 'trade_history_id' })
+  tradeHistories?: TradeHistory[];
 }

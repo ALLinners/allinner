@@ -3,7 +3,8 @@ import { formatCurrency } from './format-currency';
 export const getChangeValueWithIcon = (
   changeValue: string | number,
 ): string => {
-  changeValue = Number(changeValue);
+  if (typeof changeValue === 'string')
+    changeValue = Number(changeValue.replace(/,/g, ''));
   let result = '▶ ' + changeValue;
 
   if (changeValue > 0) result = '▲ ' + formatCurrency(changeValue);
