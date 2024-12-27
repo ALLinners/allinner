@@ -11,6 +11,8 @@ import {
 import { fetchStockData } from '../../util/fetch-stock-data';
 import { MessageCacheService } from '../../services/message-cache.service';
 import { StockService } from '../../services/stock.service';
+import { calculateUsdToKrw } from '../../util/calculate-usd-to-krw';
+import { formatCurrency } from '../../util/format-currency';
 
 @Injectable()
 export class InteractionListenerService {
@@ -52,6 +54,13 @@ export class InteractionListenerService {
           .setCustomId('buyStockModal')
           .setTitle('매수하기');
 
+        const basicPrice = stockData.closePrice;
+
+        if (stockData.currencyType && stockData.currencyType.name === 'USD') {
+          const krw = await calculateUsdToKrw(stockData.closePrice);
+          stockData.closePrice = String(formatCurrency(Math.round(krw)));
+        }
+
         const stockQuantityInput = new TextInputBuilder()
           .setCustomId('stockQuantity')
           .setLabel(
@@ -62,6 +71,8 @@ export class InteractionListenerService {
               '\u3000/\u3000' +
               '주당 ' +
               stockData.closePrice +
+              ' KRWㅣ' +
+              basicPrice +
               ' ' +
               stockData.currencyType.name,
           )

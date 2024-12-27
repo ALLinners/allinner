@@ -69,7 +69,7 @@ export class MessageListenerService {
         const stockData = await fetchStockData(findStock);
 
         const stockEmbed = await createStockEmbed(stockData);
-        const stockRow = createStockButton(stockData);
+        const stockRow = await createStockButton(stockData);
 
         await message.channel.send({
           embeds: [stockEmbed],
