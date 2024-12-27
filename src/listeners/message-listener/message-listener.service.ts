@@ -8,12 +8,13 @@ import { fetchStockData } from '../../util/fetch-stock-data';
 import { createStockEmbed } from '../../component-builder/create-stock-embed';
 import { createStockButton } from '../../component-builder/create-stock-button';
 import { createStockTypeEmbed } from '../../component-builder/create-stock-type-embed';
-import { UserService } from '../../user/user.service';
 import { StockService } from '../../services/stock.service';
 import { MessageCacheService } from '../../services/message-cache.service';
 import { createUserNotFoundEmbed } from '../../component-builder/create-user-not-found-found-embed';
-import { Wallet } from '../../wallet/entities/wallet.entity';
 import { createWalletDetailEmbed } from '../../component-builder/create-wallet-detail-embed';
+import { UserService } from '../interaction-listener/user.service';
+import { WalletService } from '../../services/wallet.service';
+import { TradeHistoryService } from '../../services/trade-history.service';
 
 @Injectable()
 export class MessageListenerService {
@@ -21,6 +22,8 @@ export class MessageListenerService {
     private readonly messageCacheService: MessageCacheService,
     private readonly userService: UserService,
     private readonly stockService: StockService,
+    private readonly walletService: WalletService,
+    private readonly tradeHistoryService: TradeHistoryService,
   ) {}
 
   async handleMessage(message: OmitPartialGroupDMChannel<Message<boolean>>) {
@@ -34,7 +37,7 @@ export class MessageListenerService {
           id: message.author.id,
           name: message.author.globalName,
         });
-
+        await this.walletService.create(user); // todo 트랜잭션 처리
         await message.reply(user.name + '님 가입을 환영합니다.');
       } catch (e) {
         if (e instanceof ConflictException) {
@@ -91,23 +94,17 @@ export class MessageListenerService {
         const user = await this.userService.find(message.author.id);
         // const userWallet = Error('TODO');
         // const userStocks = Error('TODO');
-        // for debug start
-        const userWallet = new Wallet();
-        userWallet.accountNumber = 'DEBUG-6974';
-        userWallet.userId = user.id;
-        userWallet.balance = 1818;
-        const teslaStock = await fetchStockData(
-          await this.stockService.findByName('테슬라'),
-        );
-        const samsungStock = await fetchStockData(
-          await this.stockService.findByName('삼성전자'),
-        );
-        const userStocks = [teslaStock, samsungStock];
+        const teslaStock = await this.stockService.findByName('테슬라');
+        const samsungStock = await this.stockService.findByName('삼성전자');
+        // await this.tradeHistoryService.buy(user, teslaStock);
+        // await this.tradeHistoryService.buy(user, samsungStock);
+        const wallet = await this.walletService.findByUser(user);
+        const allStock = await this.tradeHistoryService.findAllByUser(user);
         // for debug end
         const walletInfoEmbed = await createWalletDetailEmbed(
           message.author.globalName,
-          userWallet,
-          userStocks,
+          wallet,
+          allStock,
         );
         message.channel.send({ embeds: [walletInfoEmbed] });
       } catch (e) {
@@ -116,7 +113,7 @@ export class MessageListenerService {
           message.channel.send({ embeds: [embed] });
         } else if (e instanceof ConflictException) {
         } else {
-          message.channel.send('뭔가 잘못됐어요.');
+          message.channel.send('뭔가 잘못됐어요. ' + e);
         }
       }
     } else {
