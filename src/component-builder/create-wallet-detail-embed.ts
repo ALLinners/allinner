@@ -5,6 +5,7 @@ import { calculateSpace } from '../util/calculate-space';
 import { TradeHistory } from '../entities/trade-history.entity';
 import { fetchStockData } from '../util/fetch-stock-data';
 import { calculateUsdToKrw } from '../util/calculate-usd-to-krw';
+import { formatCurrency } from '../util/format-currency';
 
 export const createWalletDetailEmbed = async (
   ownerName: string,
@@ -24,18 +25,39 @@ export const createWalletDetailEmbed = async (
   description += '예수금: ' + wallet.balance + '원\n';
   description += '계좌번호: ' + wallet.accountNumber + '\n';
 
-  description += '```';
+  description += '```diff\n';
+  console.log(stocks);
   stocks.forEach((stock, index) => {
     const stockName = stock.stock.name;
-    const stockDelta = Math.round(currentPrice[index] - stock.price);
+    const stockDelta = Math.round(
+      (currentPrice[index] - stock.price) * stock.amount,
+    );
+
+    const changePercentage = (
+      ((currentPrice[index] - stock.price) / stock.price) *
+      100
+    ).toFixed(2);
+
+    const colorSelector =
+      Number(changePercentage) > 0
+        ? '+ '
+        : Number(changePercentage) < 0
+          ? '- '
+          : '= ';
 
     const stockDeltaPercentWithIcon = getChangeValueWithIcon(stockDelta);
     description +=
+      colorSelector +
       stockName +
-      calculateSpace(stockName, 10) +
+      calculateSpace(stockName, 9) +
+      String(stock.amount) +
+      '주' +
+      calculateSpace(String(stock.amount), 4) +
+      formatCurrency(stock.price * stock.amount) +
+      calculateSpace(formatCurrency(stock.price * stock.amount), 10) +
       stockDeltaPercentWithIcon +
       calculateSpace(stockDeltaPercentWithIcon, 10) +
-      (((currentPrice[index] - stock.price) / stock.price) * 100).toFixed(2) +
+      changePercentage +
       '%' +
       '\n';
   });
