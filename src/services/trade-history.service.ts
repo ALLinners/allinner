@@ -32,6 +32,19 @@ export class TradeHistoryService {
       relations: ['stock', 'stock.trader'],
     });
 
+    const countByStockId = (
+      histories: TradeHistory[],
+    ): Record<number, number> => {
+      return histories.reduce(
+        (acc, history) => {
+          const stockId = history.stock.id;
+          acc[stockId] = (acc[stockId] || 0) + 1;
+          return acc;
+        },
+        {} as Record<number, number>,
+      );
+    };
+
     const holdings = trades.reduce(
       (
         acc: { [key: number]: { quantity: number; totalCost: number } },
@@ -48,6 +61,7 @@ export class TradeHistoryService {
           acc[stock.id].totalCost -= parseFloat(price.toString());
         }
 
+        console.log(acc[stock.id].totalCost);
         return acc;
       },
       {},
@@ -57,7 +71,10 @@ export class TradeHistoryService {
       ([stockId, { quantity, totalCost }]) => ({
         stockId: Number(stockId),
         quantity,
-        averagePrice: quantity > 0 ? Math.round(totalCost / quantity) : 0,
+        averagePrice:
+          quantity > 0
+            ? Math.round(totalCost / countByStockId(trades)[stockId])
+            : 0,
       }),
     );
 
