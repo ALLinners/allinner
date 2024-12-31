@@ -17,16 +17,29 @@ export const createWalletDetailEmbed = async (
   for (const stock of stocks) {
     const stockData = await fetchStockData(stock.stock);
     if (stock.stock.trader.name === 'NASDAQ')
-      currentPrice.push(await calculateUsdToKrw(stockData.closePrice));
-    else currentPrice.push(stockData.closePrice.replace(/,/g, ''));
+      currentPrice.push(
+        await calculateUsdToKrw(stockData.overMarketPriceInfo.overPrice),
+      );
+    else
+      currentPrice.push(
+        stockData.overMarketPriceInfo.overPrice.replace(/,/g, ''),
+      );
   }
 
+  let totalProperty = 0;
+
+  stocks.forEach((stock, index) => {
+    totalProperty += Math.round(currentPrice[index] * stock.amount);
+    totalProperty += wallet.balance;
+  });
+
   let description = '';
-  description += '예수금: ' + wallet.balance + '원\n';
-  description += '계좌번호: ' + wallet.accountNumber + '\n';
+  description += '총 자산 가치:　**' + formatCurrency(totalProperty) + '원**\n';
+  description +=
+    '예 　수 　금:　**' + formatCurrency(wallet.balance) + '원**\n';
 
   description += '```diff\n';
-  console.log(stocks);
+
   stocks.forEach((stock, index) => {
     const stockName = stock.stock.name;
     const stockDelta = Math.round(
@@ -53,7 +66,7 @@ export const createWalletDetailEmbed = async (
       String(stock.amount) +
       '주' +
       calculateSpace(String(stock.amount), 4) +
-      formatCurrency(stock.price * stock.amount) +
+      formatCurrency(Math.round(currentPrice[index] * stock.amount)) +
       calculateSpace(formatCurrency(stock.price * stock.amount), 10) +
       stockDeltaPercentWithIcon +
       calculateSpace(stockDeltaPercentWithIcon, 10) +
