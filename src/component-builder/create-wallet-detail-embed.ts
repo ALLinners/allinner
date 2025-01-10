@@ -67,7 +67,10 @@ export const createWalletDetailEmbed = async (
       '주' +
       calculateSpace(String(stock.amount), 4) +
       formatCurrency(Math.round(currentPrice[index] * stock.amount)) +
-      calculateSpace(formatCurrency(stock.price * stock.amount), 10) +
+      calculateSpace(
+        formatCurrency(Math.round(currentPrice[index] * stock.amount)),
+        9,
+      ) +
       stockDeltaPercentWithIcon +
       calculateSpace(stockDeltaPercentWithIcon, 10) +
       changePercentage +
