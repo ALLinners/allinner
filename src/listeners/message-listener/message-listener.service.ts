@@ -71,7 +71,13 @@ export class MessageListenerService {
         message.channel.send(stockName + ' (이)라는 종목을 찾을 수 없어요.');
       }
 
-      const stockData = await fetchStockData(findStock);
+      let stockData = await fetchStockData(findStock);
+
+      if (findStock.trader.name === 'KOSPI')
+        stockData = {
+          ...stockData,
+          overMarketPriceInfo: { overPrice: stockData.closePrice },
+        };
 
       const stockEmbed = await createStockEmbed(stockData);
       const stockRow = await createStockButton(stockData);

@@ -8,7 +8,9 @@ import { getKospiMarketValue } from '../util/get-kospi-market-value';
 export const createStockEmbed = async (stockData: StockType) => {
   const titleIcon =
     Number(stockData.compareToPreviousClosePrice) < 0 ? '📉' : '📈';
-  const currentPrice = Number(stockData.closePrice.replace(/,/g, ''));
+  const currentPrice = Number(
+    stockData.overMarketPriceInfo.overPrice.replace(/,/g, ''),
+  );
   const marketValueKospi = await getKospiMarketValue(stockData.reutersCode);
 
   return new EmbedBuilder()

@@ -5,14 +5,18 @@ import { formatCurrency } from '../util/format-currency';
 
 export const createStockButton = async (stockData: StockType) => {
   if (stockData.currencyType && stockData.currencyType.name === 'USD') {
-    const krw = await calculateUsdToKrw(stockData.closePrice);
+    const krw = await calculateUsdToKrw(
+      stockData.overMarketPriceInfo.overPrice,
+    );
     stockData.closePrice = String(formatCurrency(Math.round(krw)));
   }
 
   return new ActionRowBuilder<ButtonBuilder>().addComponents(
     new ButtonBuilder()
       .setCustomId('buyStock')
-      .setLabel(stockData.closePrice + ' ' + 'KRW 에 매수하기')
+      .setLabel(
+        stockData.overMarketPriceInfo.overPrice + ' ' + 'KRW 에 매수하기',
+      )
       .setStyle(ButtonStyle.Primary),
   );
 };
